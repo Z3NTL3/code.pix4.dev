@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="<%= home %>/code/styles/github-dark.min.css">
+    <script src="<%= home %>/code/highlight.js"></script>
+    <script src="<%= home %>/code/languages/javascript.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=explicit"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+        * {
+            margin: 0px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            position: relative;
+            min-height: 100vh;
+            padding: 0;
+            background-color: #1b1b1b;
+        }
+        .titel {
+            margin-top: 10px;
+            font-size: 70px;
+        }
+        .hot-font {
+            
+            font-family: 'Poor Story', cursive;
+        }
+        .subtitel {
+            font-size: 29px;
+            color: #6f78f9cd;
+        }
+        .codebox {
+            position: relative;
+            z-index: 10;
+            border-radius: 8px;
+            box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px;
+        }
+        .form-control {
+            background-color: #1b1b1b;
+            color: white;
+        }
+        .your-code-titel {
+            color: white;
+            font-size: 29px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Code - Pix4 SandBox</title>
+    <meta name="description" content="Share your code with others!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Code SandBox">
+    <meta property="og:description" content="Share your code with others!">
+    <meta property="og:url" content="https://code.pix4.dev">
+    <meta property="og:image" content="https://code.pix4.dev/img/example.png">
+    <meta property="og:site_name" content="Code SandBox">
+    <link rel="shortcut icon" href="<%= home %>/img/logo.png" />    
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 class="titel text-center" style="font-weight: bold; font-size: 49px;">
+                    Code SandBox
+                </h2>
+            </div>
+            <div class="col-sm-12 mt-3 d-flex justify-content-center" style="width: 1000vh; height: fit-content;">
+                <div class="card bg-dark mb-3 p-2" style="box-shadow: rgba(32, 82, 247, 0.4) 5px 5px, rgba(40, 109, 236, 0.3) 10px 10px, rgba(32, 87, 236, 0.2) 15px 15px, rgba(26, 104, 192, 0.1) 20px 20px, rgba(40, 58, 219, 0.05) 25px 25px;">
+                    <div class="card-body">
+                    <h2 class="card-title" style="font-size: 24px;">Share your code with others...</h2>
+                    <p class="text-muted">
+                        Click the button below to create an live code sandbox.
+                    </p>
+                    <div class="d-flex justify-content-md-start">
+                        <button class="btn btn-light mb-2 mt-3 p-2" id="sandbox-creator" style="box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;" onclick="creator()">
+                            Create SandBox
+                        </button>
+                    </div>
+                    </div>
+                </div>    
+            </div>
+                <script>
+                    var id = undefined
+                    var sandboxCreator = document.getElementById('sandbox-creator')
+                    
+                    sandboxCreator.click()
+                    function creator() {
+                        swal.fire({
+                            html: `
+
+                            <div class="col-sm-12">
+                                <h2 class="text-white">
+                                    Create SandBox    
+                                </h2>
+                                <textarea name="code" id="code" style="width: 35vh; height: 20vh;" class="bg-dark text-white" placeholder="Paste your code here" class="d-flex justify-content-start"></textarea>
+                                <div id="captcha" name="captcha" class="d-flex justify-content-center mt-1 p-2"></div>    
+                            </div>
+
+                            `,
+                            didOpen: () => {
+                                captchaLoaded()
+                            },
+                            preConfirm: () => {
+                                const code = swal.getPopup().querySelector('#code').value
+                                const token = grecaptcha.getResponse(id)
+                                
+                                return { code: code, captcha: token }
+                            },
+                            confirmButtonText: 'Share',
+                            focusConfirm: false,
+                            showCancelButton: true,
+                            background: '#2b2b2b',
+                            backdrop: `
+                                rgba(0, 0, 0, 0.8)
+                                url("https://i.gifer.com/6tXM.gif")
+                                left top
+                                no-repeat
+                            `
+                            }).then(async (result) => {
+
+                                if(result.isConfirmed){
+                                    let response = await axios({
+                                        method:'POST',
+                                        url: 'https://code.pix4.dev/rest/code',
+                                        data: new URLSearchParams(`code=${result.value.code}&g-recaptcha-response=${result.value.captcha}`),
+                                        headers: {
+                                            "Content-Type": "application/x-www-form-urlencoded"
+                                        }
+                                    })
+                                    console.log('AXIOS AJAX PAYLOAD DONE')
+                                    window.location.href = `${response.request.responseURL}`
+                                }
+                        })
+                    }
+                </script>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-auto d-flex justify-content-start mt-4">
+                <h2 class="titel">
+                    Example. <br>
+                    <button class="btn btn-primary mt-2 d-flex justify-content-center"  onclick="CopyToClipboard('code-sandbox')">
+                        Copy to Clipboard
+                    </button>    
+                    <script>
+                        function CopyToClipboard(id)
+                        {
+                            var r = document.createRange();
+                            r.selectNode(document.getElementById(id));
+                            window.getSelection().removeAllRanges();
+                            window.getSelection().addRange(r);
+                            document.execCommand('copy');
+                            window.getSelection().removeAllRanges();
+                            swal.fire("Copied to clipboard!", "Successfully copied to the clipboard", "success");
+                        }
+
+                        function captchaLoaded(){
+                            if(isReady()){
+                                grecaptcha.ready( async function() {
+                                    id = await grecaptcha.render( document.getElementById('captcha') , {'theme': 'dark','sitekey' : '<%- key %>'})
+                                    // document.getElementByTagName('g-recaptcha').setAttribute('data-theme','dark')
+                                });
+                                
+                            }
+                        }
+                    </script>
+                </h2>
+                <br>
+            </div>
+            
+            <div class="col-sm-5 d-flex mt-4 m-lg-5">
+                <pre><code id="code-sandbox" class="codebox">
+const http = require('node:http');
+const net = require('node:net');
+const { URL } = require('node:url');
+
+// Create an HTTP tunneling proxy
+const proxy = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('okay');
+});
+proxy.on('connect', (req, clientSocket, head) => {
+    // Connect to an origin server
+    const { port, hostname } = new URL(`http://${req.url}`);
+    const serverSocket = net.connect(port || 80, hostname, () => {
+    clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
+                    'Proxy-agent: Node.js-Proxy\r\n' +
+                    '\r\n');
+    serverSocket.write(head);
+    serverSocket.pipe(clientSocket);
+    clientSocket.pipe(serverSocket);
+    });
+});
+
+// Now that proxy is running
+proxy.listen(1337, '127.0.0.1', () => {
+
+    // Make a request to a tunneling proxy
+    const options = {
+    port: 1337,
+    host: '127.0.0.1',
+    method: 'CONNECT',
+    path: 'www.google.com:80'
+    };
+
+    const req = http.request(options);
+    req.end();
+
+    req.on('connect', (res, socket, head) => {
+    console.log('got connected!');
+
+    // Make a request over an HTTP tunnel
+    socket.write('GET / HTTP/1.1\r\n' +
+                    'Host: www.google.com:80\r\n' +
+                    'Connection: close\r\n' +
+                    '\r\n');
+    socket.on('data', (chunk) => {
+        console.log(chunk.toString());
+    });
+    socket.on('end', () => {
+        proxy.close();
+    });
+    });
+});               
+                </code></pre>
+                <script>
+                    hljs.highlightAll();
+                    var isReady = function isReady() {
+                        return typeof window !== 'undefined' && typeof window.grecaptcha !== 'undefined';
+                    }
+                </script>
+            </div>
+            
+        </div>
+    </div>
+    
+</body>
+</html>

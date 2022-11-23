@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="<%= home %>/code/styles/github-dark.min.css">
+    <!-- <script src="<%= home %>/code/highlight.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js" integrity="sha512-gU7kztaQEl7SHJyraPfZLQCNnrKdaQi5ndOyt4L4UPL/FHDd/uB9Je6KDARIqwnNNE27hnqoWLBq+Kpe4iHfeQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+        * {
+            margin: 0px;
+            color: white;
+        }
+        html {
+            height: 100%;
+        }
+        body {
+            position: relative;
+            min-height: 100vh;
+            padding: 0;
+            background-color: #1b1b1b;
+        }
+        .titel {
+            margin-top: 10px;
+            font-size: 70px;
+        }
+        .hot-font {
+            
+            font-family: 'Poor Story', cursive;
+        }
+        .codebox {
+            border-radius: 8px;
+            -webkit-box-shadow: inset -1px 3px 8px 5px #1F87FF, 2px 5px 16px 0px #0B325E, -40px -50px 15px -24px rgba(37,37,37,0); 
+box-shadow: inset -1px 3px 8px 5px #1F87FF, 2px 5px 16px 0px #0B325E, -40px -50px 15px -24px rgba(37,37,37,0);
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Code - Pix4 SandBox</title>
+    <meta name="description" content="Check out the code sandbox here!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Code SandBox">
+    <meta property="og:description" content="Check out the code sandbox here!">
+    <meta property="og:url" content="https://code.pix4.dev">
+    <meta property="og:image" content="https://code.pix4.dev/img/example.png">
+    <meta property="og:site_name" content="Code SandBox">
+    <link rel="shortcut icon" href="<%= home %>/img/logo.png" />    
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <h2 class="titel text-center hot-font">
+                    Code SandBox
+                </h2>
+                <button class="btn btn-primary mb-2 hot-font" onclick="CopyToClipboard('code-sandbox')">
+                    Copy to Clipboard
+                </button>
+                <script>
+                    function CopyToClipboard(id)
+                    {
+                        var r = document.createRange();
+                        r.selectNode(document.getElementById(id));
+                        window.getSelection().removeAllRanges();
+                        window.getSelection().addRange(r);
+                        document.execCommand('copy');
+                        window.getSelection().removeAllRanges();
+                        swal("Copied to clipboard!", "Successfully copied to the clipboard", "success");
+                    }
+                </script>
+            </div>
+            <div class="col-sm-12">
+                <pre><code id="code-sandbox" class="codebox"><%= 
+code
+%>
+                </code></pre>
+                <script>
+                    hljs.highlightAll();
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
