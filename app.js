@@ -33,6 +33,9 @@ const AsciiTable = require("ascii-table");
 const { createClient } = require("redis");
 const fastifyCookie = require("@fastify/cookie");
 const fastifySession = require("@fastify/session");
+const { XMLParser } = require("fast-xml-parser");
+const xml_parser = new XMLParser();
+var Parse = require('fast-json-parse')
 
 var redisClient = createClient({ legacyMode: true });
 redisClient.connect().catch((err) => {
@@ -61,9 +64,6 @@ async function startServer() {
 ================================
 `);
   });
-  fastify.setNotFoundHandler((req, res) => {
-    res.redirect(config.home.url);
-  });
 
   await fastify.register(require("@fastify/formbody"));
   await fastify.register(fastifyCookie);
@@ -88,6 +88,41 @@ async function startServer() {
     root: path.join(__dirname, "public_html"),
     propertyName: "render",
   });
+
+  app.removeContentTypeParser('application/json')
+  app.addContentTypeParser(['application/xml','text/xml'],{parseAs: 'string'}, function (request, payload, done) {
+      try {
+          let parsedPayload = xml_parser.parse(payload)
+          done(null, parsedPayload)
+      } catch(err){
+          console.log(err)
+          done(err,null)
+      }
+  })
+  app.addContentTypeParser(['application/json','text/json'],{ parseAs: 'string' }, function (request, payload, done) {
+      try {
+          let parsedPayload = Parse(payload)
+          done(null, parsedPayload)
+      } catch(err){
+          done(err,null)
+      }
+  })
+  app.addContentTypeParser('*',{ parseAs: 'string' }, function (request, payload, done) {
+      try {
+          let jsonParsed = Parse(payload)
+          done(null,jsonParsed)
+      } catch(err){
+          done(err,null)
+      }
+  })
+  app.setNotFoundHandler((req,res) => {
+      res.redirect('/')
+  })
+
+  app.setErrorHandler((err,req,res)=>{
+      res.code(500).send(JSON.stringify({err: "bad client request"}))
+  })
+  
 
   await fastify.register(require(path.join(__dirname, "routes", "sandbox.js")));
   await fastify.register(require(path.join(__dirname, "routes", "home.js")));
