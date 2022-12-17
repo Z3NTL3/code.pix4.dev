@@ -89,25 +89,7 @@ async function startServer() {
     propertyName: "render",
   });
 
-  app.removeContentTypeParser('application/json')
-  app.addContentTypeParser(['application/xml','text/xml'],{parseAs: 'string'}, function (request, payload, done) {
-      try {
-          let parsedPayload = xml_parser.parse(payload)
-          done(null, parsedPayload)
-      } catch(err){
-          console.log(err)
-          done(err,null)
-      }
-  })
-  app.addContentTypeParser(['application/json','text/json'],{ parseAs: 'string' }, function (request, payload, done) {
-      try {
-          let parsedPayload = Parse(payload)
-          done(null, parsedPayload)
-      } catch(err){
-          done(err,null)
-      }
-  })
-  app.addContentTypeParser('*',{ parseAs: 'string' }, function (request, payload, done) {
+  fastify.addContentTypeParser('*',{ parseAs: 'string' }, function (request, payload, done) {
       try {
           let jsonParsed = Parse(payload)
           done(null,jsonParsed)
@@ -115,11 +97,11 @@ async function startServer() {
           done(err,null)
       }
   })
-  app.setNotFoundHandler((req,res) => {
+  fastify.setNotFoundHandler((req,res) => {
       res.redirect('/')
   })
 
-  app.setErrorHandler((err,req,res)=>{
+  fastify.setErrorHandler((err,req,res)=>{
       res.code(500).send(JSON.stringify({err: "bad client request"}))
   })
   
